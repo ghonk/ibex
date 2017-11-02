@@ -1,4 +1,5 @@
 from spacy.en import English
+import numpy as np
 import re
 
 class EntityParser:
@@ -22,6 +23,25 @@ class EntityParser:
         text = text.lower()
     
         return text
+        
+    def extractEntities(self, text: str) -> np.ndarray:
+        """ Accept unstructured text (e.g. a tweet)
+        -> an ndarray of size n_entities by 5. Each sub-ndarray specifies
+        respectively the entity text, corresponding label text, corresponding lemma,
+        start index of entity and end index of entity.        
+        """
+        parsedEx = self.parser(text)
+        listOfResults = []
+        
+        # extract entities
+        ents = list(parsedEx.ents)
+        # print("DEBUG::the entities are:")
+        for entity in ents:
+            #print(entity.label_, entity.start_char, entity.end_char, entity.lemma_, ' '.join(t.orth_ for t in entity))
+            listOfResults.append(list((' '.join(t.orth_ for t in entity), entity.label_, entity.lemma_, 
+                                       entity.start_char, entity.end_char)))
+            
+        return np.asarray(listOfResults)
         
     # Tokenize the text using spaCy and convert to lemmas
     def tokenizeText(self, sample: str) -> English:
