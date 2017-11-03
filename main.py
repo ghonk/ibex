@@ -22,3 +22,19 @@ print(result)
 
 print("DEBUG::the size of the result (np.ndarray) is:")
 print(result.shape)
+
+
+# next, demo the batch processing function
+idx = randrange(len(df_list)-5)
+many_examples = df_list[idx:idx+5]
+
+print("DEBUG::randomly drawn example tweet batch:")
+print(many_examples)
+
+result = NER.batchExtractEntities(many_examples)
+
+print("DEBUG::the entities are:")
+print(result)
+
+print("DEBUG::the length of the result (list of np.ndarrays) is:")
+print(len(result))
