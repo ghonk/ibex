@@ -1,11 +1,11 @@
-from spacy.en import English
+import spacy
 import numpy as np
 import re
 from typing import List
 
 class EntityParser:
     def __init__(self):
-        self.parser = English()
+        self.parser = spacy.load('en_core_web_md')
         
         
     # Utility function to clean text before post-processing
@@ -70,7 +70,7 @@ class EntityParser:
         return listOfResults
         
     # Tokenize the text using spaCy and convert to lemmas
-    def tokenizeText(self, sample: str) -> English:
+    def tokenizeText(self, sample: str):
 
         # get the tokens using spaCy
         tokens = self.parser(sample)
