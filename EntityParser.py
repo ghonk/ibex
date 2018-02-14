@@ -5,25 +5,49 @@ from typing import List
 
 class EntityParser:
     def __init__(self):
-        self.parser = spacy.load('en_core_web_md')
+        self.parser = spacy.load('en')
         
         
     # Utility function to clean text before post-processing
     def cleanText(self, text: str) -> str:
-        # get rid of newlines
-        text = text.strip().replace("\n", " ").replace("\r", " ")
-        
-        # replace twitter @mentions
-        mentionFinder = re.compile(r"@[a-z0-9_]{1,15}", re.IGNORECASE)
-        text = mentionFinder.sub("@MENTION", text)
-        
-        # replace HTML symbols
-        text = text.replace("&amp;", "and").replace("&gt;", ">").replace("&lt;", "<")
-        
-        # lowercase
-        text = text.lower()
-    
+        text = self.removeHashtags(text)
+        text = self.removeRT(text)
+        text = self.removeMentions(text)
+        text = self.removeNumbers(text)
+        text = self.removeDoubleSpaces(text)
+        text = self.removeNewlines(text)
+        text = self.removeURIs(text)
         return text
+
+    def removeURIs(self, text: str) -> str:
+        return re.sub(r'^https?:\/\/.*[\r\n]*', '', text)
+
+    def removeHashtags(self, text: str) -> str:
+        return re.sub(r'#\w*','', text)
+
+    def removeMentions(self, text: str) -> str:
+        return re.sub(r'@\w*', '', text)
+
+    def removeNumbers(self, text: str) -> str:
+        return re.sub(r'\d*', '', text)
+
+    def removeDoubleSpaces(self, text: str) -> str:
+        return re.sub(r'  ', ' ', text)
+    
+    def removeNewlines(self, text: str) -> str:
+        return re.sub(r'\n', '', text)
+
+    def removeRT(self, text: str) -> str:
+        return re.sub(r'(RT) \@', '@', text) 
+
+    def removeSubPhrases(self, a_list: List[str], b_list: List[str]):
+        term_b_to_remove = []
+        for term_a in a_list:
+            for term_b in b_list:
+                if term_b + ' ' in term_a or ' ' + term_b in term_a:
+                    term_b_to_remove.append(term_b)
+        b_list = list(set(b_list) - set(term_b_to_remove))
+        return (a_list, b_list)
         
     def extractEntities(self, text: str) -> np.ndarray:
         """ Accept unstructured text (e.g. a tweet)
@@ -31,70 +55,22 @@ class EntityParser:
         respectively the entity text, corresponding label text, corresponding lemma,
         start index of entity and end index of entity.        
         """
+        
+        # Remove hashtags and mentions before parsing
+        text = self.cleanText(text)
+        
         parsedEx = self.parser(text)
-        listOfResults = []
-        
-        # extract entities
-        ents = list(parsedEx.ents)
-        # print("DEBUG::the entities are:")
-        for entity in ents:
-            #print(entity.label_, entity.start_char, entity.end_char, entity.lemma_, ' '.join(t.orth_ for t in entity))
-            listOfResults.append(list((' '.join(t.orth_ for t in entity), entity.label_, entity.lemma_, 
-                                       entity.start_char, entity.end_char)))
-            
-        return np.asarray(listOfResults)
-        
-    def batchExtractEntities(self, text: List[str]) -> List[np.ndarray]:
-        """ Accept a list of unstructured text (e.g. a tweet)
-        -> a list of ndarrays of length n_text_samples. Each entry is an ndarray of size 
-        n_entities by 5. Each sub-ndarray specifies respectively the entity text, 
-        corresponding label text, corresponding lemma, start index of entity and end index of entity.
-        """
-        
-        listOfResults = []
-        
-        for text_sample in text:
-            listOfSampleResults = []
-            parsedEx = self.parser(text_sample)
-        
-            # extract entities
-            ents = list(parsedEx.ents)
-            # print("DEBUG::the entities are:")
-            for entity in ents:
-                #print(entity.label_, entity.start_char, entity.end_char, entity.lemma_, ' '.join(t.orth_ for t in entity))
-                listOfSampleResults.append(list((' '.join(t.orth_ for t in entity), entity.label_, entity.lemma_, 
-                                           entity.start_char, entity.end_char)))
-                                           
-            listOfResults.append(np.asarray(listOfSampleResults))
-            
-        return listOfResults
-        
-    # Tokenize the text using spaCy and convert to lemmas
-    def tokenizeText(self, sample: str):
 
-        # get the tokens using spaCy
-        tokens = self.parser(sample)
-    
-        # lemmatize
-        lemmas = []
-        for tok in tokens:
-            lemmas.append(tok.lemma_.lower().strip() if tok.lemma_ != "-PRON-" else tok.lower_)
-        tokens = lemmas
-    
-        # stoplist the tokens
-        tokens = [tok for tok in tokens if tok not in STOPLIST]
-    
-        # stoplist symbols
-        tokens = [tok for tok in tokens if tok not in SYMBOLS]
-    
-        # remove large strings of whitespace
-        while "" in tokens:
-            tokens.remove("")
-        while " " in tokens:
-            tokens.remove(" ")
-        while "\n" in tokens:
-            tokens.remove("\n")
-        while "\n\n" in tokens:
-            tokens.remove("\n\n")
-            
-        return tokens
+        # consider using lemmas instead of base words -- may do strange things to named entities
+        filterFunc = lambda term: term.pos_ in ['PROPN', 'NOUN', 'VERB'] and term.dep_ in ['nsubj', 'dobj', 'pobj'] and not term.is_stop
+
+        ents = [e.text.lower() for e in parsedEx.ents]
+
+        otherTerms = [term.text.lower() for term in filter(filterFunc, parsedEx)]
+
+        term_lists = self.removeSubPhrases(ents, otherTerms)
+        term_lists = self.removeSubPhrases(term_lists[1], term_lists[0])
+
+        listOfResults = list(set(term_lists[0]) | set(term_lists[1]))
+
+        return filter(lambda x: not x == ' ', listOfResults)

@@ -10,10 +10,10 @@ nlp = EntityParser()
 @app.route('/private/entityExtraction')
 def extract_entities():
     text = request.args.get('text')
-    entities = nlp.extractEntities(text).tolist()
-    nouns = list(map(lambda e: e[0], entities))
 
-    return jsonify(nouns)
+    entities = nlp.extractEntities(text)
+
+    return jsonify(entities)
 
 
 def main():
