@@ -64,7 +64,11 @@ class EntityParser:
         # consider using lemmas instead of base words -- may do strange things to named entities
         filterFunc = lambda term: term.pos_ in ['PROPN', 'NOUN', 'VERB'] and term.dep_ in ['nsubj', 'dobj', 'pobj'] and not term.is_stop
 
+        numberWords = [e.text.lower() for e in filter(lambda term: term.pos_ == 'NUM', parsedEx)]        
+
         ents = [e.text.lower() for e in parsedEx.ents]
+
+        ents = list(set(ents) - set(numberWords))
 
         otherTerms = [term.text.lower() for term in filter(filterFunc, parsedEx)]
 
