@@ -77,4 +77,4 @@ class EntityParser:
 
         listOfResults = list(set(term_lists[0]) | set(term_lists[1]))
 
-        return filter(lambda x: not x == ' ', listOfResults)
+        return list(filter(lambda x: not x == ' ', listOfResults))
