@@ -2,12 +2,12 @@ import spacy
 import numpy as np
 import re
 from typing import List
-import hu_tagger_web_md
+from hu_nlp import HuNlp
 
 class EntityParser:
     def __init__(self):
         self.en_parser = spacy.load('en')
-        self.hu_parser = spacy.load('hu')
+        self.hu_parser = HuNlp()
         
     # Utility function to clean text before post-processing
     def cleanText(self, text: str) -> str:
@@ -66,7 +66,7 @@ class EntityParser:
         text = self.cleanText(text)
 
         parsedEx = parser(text)
-
+        
         # consider using lemmas instead of base words -- may do strange things to named entities
         filterFunc = lambda term: term.pos_ in ['PROPN', 'NOUN', 'VERB'] and term.dep_ in ['nsubj', 'dobj', 'pobj'] and not term.is_stop
 
