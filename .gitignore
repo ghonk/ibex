@@ -102,6 +102,7 @@ ENV/
 
 # custom
 backup/
+data/
 
 # vscode config
 .vscode
