@@ -2,11 +2,12 @@ import spacy
 import numpy as np
 import re
 from typing import List
+from hu_nlp import HuNlp
 
 class EntityParser:
     def __init__(self):
-        self.parser = spacy.load('en')
-        
+        self.en_parser = spacy.load('en')
+        self.hu_parser = HuNlp()
         
     # Utility function to clean text before post-processing
     def cleanText(self, text: str) -> str:
@@ -17,6 +18,7 @@ class EntityParser:
         text = self.removeDoubleSpaces(text)
         text = self.removeNewlines(text)
         text = self.removeURIs(text)
+
         return text
 
     def removeURIs(self, text: str) -> str:
@@ -49,18 +51,22 @@ class EntityParser:
         b_list = list(set(b_list) - set(term_b_to_remove))
         return (a_list, b_list)
         
-    def extractEntities(self, text: str) -> np.ndarray:
+    def extractEntities(self, text: str, lang: str) -> np.ndarray:
         """ Accept unstructured text (e.g. a tweet)
         -> an ndarray of size n_entities by 5. Each sub-ndarray specifies
         respectively the entity text, corresponding label text, corresponding lemma,
         start index of entity and end index of entity.        
         """
+        if lang == "hu":
+            parser = self.hu_parser
+        else:
+            parser = self.en_parser
         
         # Remove hashtags and mentions before parsing
         text = self.cleanText(text)
-        
-        parsedEx = self.parser(text)
 
+        parsedEx = parser(text)
+        
         # consider using lemmas instead of base words -- may do strange things to named entities
         filterFunc = lambda term: term.pos_ in ['PROPN', 'NOUN', 'VERB'] and term.dep_ in ['nsubj', 'dobj', 'pobj'] and not term.is_stop
 
