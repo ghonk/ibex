@@ -3,13 +3,11 @@ import numpy as np
 import re
 import string
 from typing import List
-from hu_nlp import HuNlp
 
 class EntityParser:
     def __init__(self):
         self.en_parser = spacy.load('en')
         self.es_parser = spacy.load('es_core_news_md')
-        self.hu_parser = HuNlp()
 
 
         self.re_uri = re.compile('https?:(\/?\/?)[^\s]+')#('https?:\/\/.* ?')
@@ -74,9 +72,7 @@ class EntityParser:
         respectively the entity text, corresponding label text, corresponding lemma,
         start index of entity and end index of entity.        
         """
-        if lang == "hu":
-            parser = self.hu_parser
-        elif lang == 'es':
+        if lang == 'es':
             parser = self.es_parser
         else:
             parser = self.en_parser
