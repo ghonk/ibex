@@ -1,13 +1,26 @@
 import spacy
 import numpy as np
 import re
+import string
 from typing import List
 from hu_nlp import HuNlp
 
 class EntityParser:
     def __init__(self):
         self.en_parser = spacy.load('en')
+        self.es_parser = spacy.load('es_core_news_md')
         self.hu_parser = HuNlp()
+
+
+        self.re_uri = re.compile('https?:(\/?\/?)[^\s]+')#('https?:\/\/.* ?')
+        self.re_hashtags = re.compile('#\w*')
+        self.re_mentions = re.compile('@\w*')
+        self.re_numbers = re.compile('\d*')
+        self.re_doublespaces = re.compile('  ')
+        self.re_newlines = re.compile('\n')
+        self.re_retweets = re.compile('(RT) \@')
+        self.re_punctuation = re.compile('[%s]' % re.escape(string.punctuation))
+
         
     # Utility function to clean text before post-processing
     def cleanText(self, text: str) -> str:
@@ -18,29 +31,33 @@ class EntityParser:
         text = self.removeDoubleSpaces(text)
         text = self.removeNewlines(text)
         text = self.removeURIs(text)
+        text = self.removePunctuation(text)
 
         return text
 
     def removeURIs(self, text: str) -> str:
-        return re.sub(r'^https?:\/\/.*[\r\n]*', '', text)
+        return self.re_uri.sub('', text)
 
     def removeHashtags(self, text: str) -> str:
-        return re.sub(r'#\w*','', text)
+        return self.re_hashtags.sub('', text)
 
     def removeMentions(self, text: str) -> str:
-        return re.sub(r'@\w*', '', text)
+        return self.re_mentions.sub('', text)
 
     def removeNumbers(self, text: str) -> str:
-        return re.sub(r'\d*', '', text)
+        return self.re_numbers.sub('', text)
+
+    def removePunctuation(self, text: str) -> str:
+        return self.re_punctuation.sub('', text)
 
     def removeDoubleSpaces(self, text: str) -> str:
-        return re.sub(r'  ', ' ', text)
+        return self.re_doublespaces.sub('', text)
     
     def removeNewlines(self, text: str) -> str:
-        return re.sub(r'\n', '', text)
+        return self.re_newlines.sub('', text)
 
     def removeRT(self, text: str) -> str:
-        return re.sub(r'(RT) \@', '@', text) 
+        return self.re_retweets.sub('', text)
 
     def removeSubPhrases(self, a_list: List[str], b_list: List[str]):
         term_b_to_remove = []
@@ -59,10 +76,12 @@ class EntityParser:
         """
         if lang == "hu":
             parser = self.hu_parser
+        elif lang == 'es':
+            parser = self.es_parser
         else:
             parser = self.en_parser
         
-        # Remove hashtags and mentions before parsing
+        # Remove hashtags, mentions, newlines, numbers, and punctuation before parsing
         text = self.cleanText(text)
 
         parsedEx = parser(text)
@@ -84,3 +103,4 @@ class EntityParser:
         listOfResults = list(set(term_lists[0]) | set(term_lists[1]))
 
         return list(filter(lambda x: not x == ' ', listOfResults))
+
