@@ -1,7 +1,8 @@
-import spacy
-import numpy as np
 import re
+import spacy
 import string
+import logging
+import numpy as np
 from typing import List
 
 class EntityParser:
@@ -18,6 +19,14 @@ class EntityParser:
         self.re_newlines = re.compile('\n')
         self.re_retweets = re.compile('(RT) \@')
         self.re_punctuation = re.compile('[%s]' % re.escape(string.punctuation))
+
+        try:
+            with open('excluded_words.txt', 'r') as f:
+                self.excluded_words = set([word.rstrip('\n') for word in f.readlines()])
+        except:
+            logging.exception("Could not read 'excluded_words' file")
+            self.excluded_words = set()
+
 
         
     # Utility function to clean text before post-processing
@@ -96,7 +105,7 @@ class EntityParser:
         term_lists = self.removeSubPhrases(ents, otherTerms)
         term_lists = self.removeSubPhrases(term_lists[1], term_lists[0])
 
-        listOfResults = list(set(term_lists[0]) | set(term_lists[1]))
+        listOfResults = list((set(term_lists[0]) | set(term_lists[1])) - self.excluded_words)
 
         return list(filter(lambda x: not x == ' ', listOfResults))
 
