@@ -58,10 +58,10 @@ class EntityParser:
         return self.re_punctuation.sub('', text)
 
     def removeDoubleSpaces(self, text: str) -> str:
-        return self.re_doublespaces.sub('', text)
+        return self.re_doublespaces.sub(' ', text)
     
     def removeNewlines(self, text: str) -> str:
-        return self.re_newlines.sub('', text)
+        return self.re_newlines.sub(' ', text)
 
     def removeRT(self, text: str) -> str:
         return self.re_retweets.sub('', text)
@@ -106,6 +106,8 @@ class EntityParser:
         term_lists = self.removeSubPhrases(term_lists[1], term_lists[0])
 
         listOfResults = list((set(term_lists[0]) | set(term_lists[1])) - self.excluded_words)
+        listOfResults = [w.strip() for w in listOfResults]
+        listOfResults = [w for w in listOfResults if not w == '']
 
-        return list(filter(lambda x: not x == ' ', listOfResults))
+        return listOfResults
 
