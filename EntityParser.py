@@ -14,7 +14,7 @@ class EntityParser:
         self.re_uri = re.compile('https?:(\/?\/?)[^\s]+')#('https?:\/\/.* ?')
         self.re_hashtags = re.compile('#\w*')
         self.re_mentions = re.compile('@\w*')
-        self.re_numbers = re.compile('\d*')
+        self.re_numbers = re.compile('^\d*&')
         self.re_doublespaces = re.compile('  ')
         self.re_newlines = re.compile('\n')
         self.re_retweets = re.compile('(RT) \@')
@@ -34,7 +34,6 @@ class EntityParser:
         text = self.removeHashtags(text)
         text = self.removeRT(text)
         text = self.removeMentions(text)
-        text = self.removeNumbers(text)
         text = self.removeDoubleSpaces(text)
         text = self.removeNewlines(text)
         text = self.removeURIs(text)
@@ -107,6 +106,7 @@ class EntityParser:
 
         listOfResults = list((set(term_lists[0]) | set(term_lists[1])) - self.excluded_words)
         listOfResults = [w.strip() for w in listOfResults]
+        listOfResults = [self.removeNumbers(w) for w in listOfResults]
         listOfResults = [w for w in listOfResults if not w == '']
 
         return listOfResults
