@@ -126,5 +126,7 @@ if __name__ == '__main__':
     docs = df.content.values
 
     ep = EntityParser()
-    ents = [ep.extract_entities(d, 'spanish') for d in docs]
-    print(ents)
+    results = [ep.extract_entities(d, 'spanish') for d in docs]
+    for ents in results:
+        assert '¡' not in ents
+    print(results)
