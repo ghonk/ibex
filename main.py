@@ -8,6 +8,11 @@ from EntityParser import EntityParser
 nlp = EntityParser()
 
 
+@app.route('/')
+def homepage():
+    return 'Entity Extraction Service'
+
+
 @app.route('/private/entityExtraction')
 def extract_entities():
     text = request.args.get('text')
@@ -20,6 +25,7 @@ def extract_entities():
 
 def main():
     app.run(host='0.0.0.0', port=int(os.getenv('PORT', default=3001)))
+    # app.run(debug=True)
 
 
 if __name__ == '__main__':
