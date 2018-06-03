@@ -19,7 +19,7 @@ print("DEBUG::randomly drawn example tweet:")
 print(example)
 
 NER = EntityParser()
-result = NER.extractEntities(example)
+result = NER.extract_entities(example, 'english')
 
 print("DEBUG::the entities are:")
 print(result)
@@ -35,7 +35,7 @@ many_examples = df_list[idx:idx + 5]
 print("DEBUG::randomly drawn example tweet batch:")
 print(many_examples)
 
-result = NER.batchExtractEntities(many_examples)
+# result = NER.batchExtractEntities(many_examples)
 
 print("DEBUG::the entities are:")
 print(result)

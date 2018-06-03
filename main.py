@@ -7,12 +7,13 @@ from EntityParser import EntityParser
 
 nlp = EntityParser()
 
+
 @app.route('/private/entityExtraction')
 def extract_entities():
     text = request.args.get('text')
     lang = request.args.get('lang')
 
-    entities = nlp.extractEntities(text, lang)
+    entities = nlp.extract_entities(text, lang)
 
     return jsonify(entities)
 
