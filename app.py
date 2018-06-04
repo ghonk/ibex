@@ -25,6 +25,8 @@ def request_entities():
     if not text:
         return 'You must provide text in the request, either as a querystring or form argument.'
     if isinstance(text, list):
+        if text and not isinstance(text[0], str):
+            return 'Text must be a string or list of strings.'
         entities = [get_entities(doc, lang) for doc in text]
     elif isinstance(text, str):
         entities = get_entities(text, lang)
