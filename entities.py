@@ -36,7 +36,7 @@ LANG_TO_PARSER = {
 def get_entities(doc: str, language: str='english'):
     ''' Takes a document and returns a list of extracted entities '''
 
-    parser_name = LANG_TO_PARSER.get(language, None)
+    parser_name = LANG_TO_PARSER.get(language, '').lower()
     if not parser_name:
         raise Exception('language not currently supported')
 
