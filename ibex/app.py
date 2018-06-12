@@ -9,7 +9,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def homepage():
-    return 'Entity Extraction Service'
+    return 'Named Entity Extraction Service'
 
 
 @app.route('/entities', methods=['GET', 'POST'])
@@ -34,11 +34,3 @@ def request_entities():
         return 'Text must be a string or list of strings.'
 
     return jsonify(entities)
-
-
-def main():
-    app.run(host='0.0.0.0', port=PORT, debug=DEBUG)
-
-
-if __name__ == '__main__':
-    main()
