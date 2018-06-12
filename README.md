@@ -1,24 +1,16 @@
 # IbeX - Intelligence based entity Xtraction
 
-This repo is an implementation of a class that employs spaCy for named entity recognition.
+This service is a wrapper for the spaCy named entity recognition tool. Given a text document, `ibex.entities.get_entites` will return a list of the named entities detected. A key weakness of spaCy's NER is that it may not recognize proper nouns that are not properly capitalized.
 
-See example.py for detailed demonstration of use. In this example, a database of tweets is loaded (from data/ subfolder), a random tweet is drawn and named-entities extracted and printed to screen. Run this a few times to get a good sense of performance strengths and weaknesses. Consider analyzing your own tweet database as well, using this as a template...
+## Docker
 
-Note a key weakness of spaCy NER -> proper nouns that are not properly capitalized may not be interpreted. This is state-of-the-art, so we will need to enhance it if this is a big issue for our purposes.
+To run in development mode with Docker: 
 
-More detailed instructions will be provided as this repository evolves. In the mean time, follow the steps below to get going. It is recommended you use a Linux system and python3.5+
-
-1. Install spaCy, Pandas and Flask with
-
-```bash
-pip3 install -r requirements.txt
+```
+./run-dev.sh
 ```
 
-2. Install spaCy's English language model with
+## Flask API
+As a health-check, the base route `/` will return a description of th service. 
 
-```bash
-python3 -m spacy download en_core_web_md
-```
-
-
-
+GET or POST requests can be made to the `/entities` route with `text` and `lang` parameters given as query string arguments (for GET requests) or as field values (for POST requests). `text` defines the content of the document and `lang` specifies the language. Currently only `english` and `spanish` are supported values.
