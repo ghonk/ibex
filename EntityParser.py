@@ -13,8 +13,7 @@ LANGUAGES = ['english', 'spanish']  # 'hungarian', 'french', 'italian'
 class EntityParser:
     def __init__(self):
         self.en_parser = spacy.load('en')
-        self.es_parser = spacy.load('es_core_news_md')
-        # self.xx_parser = spacy.load('xx')  # cross language parser
+        self.es_parser = spacy.load('es')
 
         self.re_uri = re.compile('https?:(\/?\/?)[^\s]+')  # ('https?:\/\/.* ?')
         self.re_hashtags = re.compile('#\w*')
@@ -23,7 +22,7 @@ class EntityParser:
         self.re_doublespaces = re.compile('  ')
         self.re_newlines = re.compile('\n')
         self.re_retweets = re.compile('(RT) \@')
-        self.re_punctuation = re.compile('[%s]' % re.escape(string.punctuation))
+        self.re_punctuation = re.compile('[%s]' % re.escape(string.punctuation+'¡'+'¿'))
 
         try:
             with open('excluded_words.txt', 'r') as f:
@@ -118,15 +117,3 @@ class EntityParser:
         results = [w for w in results if w != '']
 
         return results
-
-
-if __name__ == '__main__':
-
-    df = pd.read_csv('test.csv')
-    docs = df.content.values
-
-    ep = EntityParser()
-    results = [ep.extract_entities(d, 'spanish') for d in docs]
-    for ents in results:
-        assert '¡' not in ents
-    print(results)
