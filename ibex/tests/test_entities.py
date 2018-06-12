@@ -43,7 +43,9 @@ def test_text_clean():
 
 
 def test_exclude_words():
-    ''' test that words and characters manually included in exclude_words.txt are dropped along with numbers and punctuation '''
+    ''' test that words and characters manually included in exclude_words.txt
+    are dropped along with numbers and punctuation 
+    '''
 
     doc = "¿¡Can you believe This Company!?"
     result = get_entities(doc, 'english')
