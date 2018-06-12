@@ -1,5 +1,5 @@
-# from setuptools import setup
-from distutils.core import setup
+from setuptools import setup
+# from distutils.core import setup
 
 setup(
     name='ibex',
@@ -10,8 +10,8 @@ setup(
     package_data={'ibex': ['exclude_words.txt']},
     include_package_data=True,
     install_requires=[
-        'spacy',
-        'nltk',
-        'flask',
+        'spacy>=2.0.11',
+        'nltk>=3.2.5',
+        'flask>=1.0.2',
     ],
 )

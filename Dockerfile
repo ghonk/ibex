@@ -1,14 +1,12 @@
-FROM python:3.6-slim
+FROM python:3.6
 
 RUN mkdir /app \
-    && pip install --upgrade pip
-# && apt-get update \
-# && apt-get install -y --no-install-recommends gcc
+    && pip install --upgrade pip 
 
 WORKDIR /app
 COPY . /app
 
-RUN pip install -r requirements.txt 
+RUN python setup.py install 
 RUN python -c "import nltk; nltk.download('stopwords')"
 RUN python -m spacy download en \
     && python -m spacy download es
