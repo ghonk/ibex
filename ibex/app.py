@@ -1,8 +1,8 @@
 '''Flask app for the entity extraction service Ibex'''
 from flask import Flask, jsonify, request
 
-from config import PORT, DEBUG
-from entities import get_entities
+from .config import PORT, DEBUG
+from .entities import get_entities
 
 app = Flask(__name__)
 
@@ -19,7 +19,7 @@ def request_entities():
     text. If text is a list of strings it will return a list of lists of the
     extracted entities. 
     '''
-
+    # using request.values lets the params either be in the form of the post req or the query string of the get req
     lang = request.values.get('lang', 'english')
     text = request.values.get('text')
     if not text:

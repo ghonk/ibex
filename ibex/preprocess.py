@@ -2,15 +2,17 @@ import re
 import string
 
 REGEX_FILTERS = {
+    re.compile('RT @\w+'): '',  # retweet (filter before removing mentions)
     re.compile('https?://\S+'): '',  # uri
     re.compile('#\w*'): '',  # hashtag
     re.compile('@\w*'): '',  # mention
     re.compile('\d+'): '',  # number
-    re.compile('(RT) \@'): '',  # retweet # TODO why is @ escaped?
-    re.compile('[{chars}]'.format(chars=string.punctuation)): '',  # punctuation  TODO add other languages' punctuation
+    re.compile('[{chars}]'.format(chars=string.punctuation + '¿¡')): '',
     re.compile('\s'): ' ',  # whitespace [ \t\n\r\f\v]
 }
 # TODO option to remove emoji, env var?
+# TODO is a bad idea to remove punctuation before parsing for POS etc.?
+
 
 SPACES_REGEX = re.compile('  +')
 

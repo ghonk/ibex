@@ -20,10 +20,5 @@ pip3 install -r requirements.txt
 python3 -m spacy download en_core_web_md
 ```
 
-3. Then, run example.py simply as 
-
-```bash
-python3 example.py
-```
 
 
