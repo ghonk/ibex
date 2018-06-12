@@ -1,6 +1,6 @@
-# IbeX - Intelligence based entity Xtraction
+# ibex - Intelligence Based Entity Xtraction
 
-This service is a wrapper for the spaCy named entity recognition tool. Given a text document, `ibex.entities.get_entites` will return a list of the named entities detected. A key weakness of spaCy's NER is that it may not recognize proper nouns that are not properly capitalized.
+This service is a wrapper for the spaCy named entity recognition tool. Given a text document, `ibex.get_entites(text, language='english')` will return a list of the named entities detected. A key weakness of spaCy's NER is that it may not recognize proper nouns that are not properly capitalized.
 
 ## Docker
 
