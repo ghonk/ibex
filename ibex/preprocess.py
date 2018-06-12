@@ -6,12 +6,12 @@ REGEX_FILTERS = {
     re.compile('https?://\S+'): '',  # uri
     re.compile('#\w*'): '',  # hashtag
     re.compile('@\w*'): '',  # mention
-    re.compile('\d+'): '',  # number
-    re.compile('[{chars}]'.format(chars=string.punctuation + '¿¡')): '',
+    # re.compile('\d+'): '',  # number
+    # re.compile('[{chars}]'.format(chars=string.punctuation + '¿¡')): '',
     re.compile('\s'): ' ',  # whitespace [ \t\n\r\f\v]
 }
+# TODO remove punctuation and numbers before parsing for POS etc.?
 # TODO option to remove emoji, env var?
-# TODO is a bad idea to remove punctuation before parsing for POS etc.?
 
 
 SPACES_REGEX = re.compile('  +')

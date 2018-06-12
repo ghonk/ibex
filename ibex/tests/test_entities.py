@@ -32,14 +32,14 @@ def test_text_clean():
     for val in ['RT', '@panekbill:', '@AverageHunter']:
         assert val not in prep_doc
 
-    # check that numbers and punctuation are dropped
-    doc = "The character '&' can be traced back to 100 A.D.!"
-    prep_doc = prep_text(doc)
-    for val in ['&', '100', "'", "!"]:
-        assert val not in prep_doc
+    # # check that numbers and punctuation are dropped
+    # doc = "The character '&' can be traced back to 100 A.D.!"
+    # prep_doc = prep_text(doc)
+    # for val in ['&', '100', "'", "!"]:
+    #     assert val not in prep_doc
 
-    prep_doc = prep_text(span_doc)
-    assert "¡" not in prep_doc
+    # prep_doc = prep_text(span_doc)
+    # assert "¡" not in prep_doc
 
 
 def test_exclude_words():
@@ -49,3 +49,13 @@ def test_exclude_words():
     result = get_entities(doc, 'english')
     for val in ['¿', '¡', 'company']:
         assert val not in result
+
+    doc = 'The Number Five is one larger than The Number 4.'
+    result = get_entities(doc, 'english')
+    for val in ['Five', 'one', '4']:
+        assert val not in result
+
+    doc = "¿Hola, Qué hora es, Paul?"
+    result = get_entities(doc, 'spanish')
+    for val in ['¿', 'Hola', 'Qué', '?']:
+        assert not any([val in ent for ent in result])
