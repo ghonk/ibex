@@ -30,16 +30,20 @@ LANG_TO_PARSER = {
 
 
 def remove_entity(entity):
+    ''' filter entities identified by spacey. For single-word entities, remove
+    those in the exclude list or not proper nouns. for multi-word entities, make
+    sure all words are not stop words with some exceptions.
+    '''
+
     if len(entity) == 1:
         # for single word entities, remove if stop word or number
         ent = entity[0]
-        return (ent.is_stop
-                or ent.text.lower() in EXCLUDE_WORDS
+        return (ent.is_stop or ent.text.lower() in EXCLUDE_WORDS
                 or ent.pos_ != 'PROPN'
                 # or ent.pos_ == 'NUM'
                 # or ent.pos_ == 'PUNCT')
-                # TODO allow single entities that are not tagged as a proper noun?
                 )
+        # TODO allow single entities that are not tagged as a proper noun?
 
     # for multi-word entities, remove if there are any stop words with exceptions for some POS
     remove = [(word.is_stop or (word.text.lower() in EXCLUDE_WORDS))
@@ -47,7 +51,6 @@ def remove_entity(entity):
               and not (word.pos_ == 'DET' and word.tag_ != 'WDT' and word.tag_ != 'DET__PronType=Int')
               and word.pos_ != 'ADP'  # and adpositions
               for word in entity]
-    # TODO allow punctuation in multi-word entities?
 
     return any(remove)
 
