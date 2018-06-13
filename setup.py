@@ -12,5 +12,6 @@ setup(
     install_requires=[
         'spacy>=2.0.11',
         'nltk>=3.2.5',
+        'flask>=1.0.2',
     ],
 )
