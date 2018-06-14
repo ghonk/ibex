@@ -49,9 +49,11 @@ def filter_entity(entity):
     return any(remove)
 
 
-def get_entities(docs: List(str), language: str='english'):
+def get_entities(docs: List[str], language: str='english'):
     ''' Takes a document and returns a list of extracted entities '''
 
+    if isinstance(docs, str):
+        docs = [docs]
     # if language given is not the name of a spacy parser, try to convert it to one
     parser_name = language if language in LANG_TO_PARSER.values() else LANG_TO_PARSER.get(language.lower())
     if not parser_name:
@@ -71,5 +73,5 @@ def get_entities(docs: List(str), language: str='english'):
     return [get_ents(doc) for doc in docs]
 
 
-def produce(docs: List(str), language: str='english'):
+def produce(docs: List[str], language: str='english'):
     return get_entities(docs, language)

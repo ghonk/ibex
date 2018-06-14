@@ -1,5 +1,5 @@
 from ..preprocess import prep_text
-from ..entities import get_entities
+from ..entities import get_entities, produce
 
 
 eng_doc = "President Donald Trump did disrespect my son and my daughter https://t.co/BcROQI0Jle #MAGA #Patriot #1A #2A #GOP"
@@ -9,13 +9,14 @@ span_doc = "Amlo no ¡con las manos masa Nicolás Maduro López Obrador comparte
 def test_multi_word():
     ''' check that multi-word proper nouns are identified as entities '''
     result = get_entities(eng_doc, 'english')
-    assert 'Donald Trump' in result
+    assert any(['Donald Trump' in res for res in result])
 
     result = get_entities(span_doc, 'spanish')
-    assert 'Nicolás Maduro López Obrador' in result
+    assert any(['Nicolás Maduro López Obrador' in res for res in result])
 
     result = get_entities('The Eiffel Tower in Paris is very pretty.', 'english')
-    assert 'The Eiffel Tower' in result and 'Paris' in result
+    assert any(['The Eiffel Tower' in res for res in result])
+    assert any(['Paris' in res for res in result])
 
 
 def test_text_clean():
@@ -48,16 +49,31 @@ def test_exclude_words():
     '''
 
     doc = "¿¡Can you believe This Company!?"
-    result = get_entities(doc, 'english')
+    results = get_entities(doc, 'english')
     for val in ['¿', '¡', 'company']:
-        assert val not in result
+        assert not any([val in ent
+                        for res in results
+                        for ent in res])
 
     doc = 'The Number Five is one larger than The Number 4.'
-    result = get_entities(doc, 'english')
+    results = get_entities(doc, 'english')
     for val in ['Five', 'one', '4']:
-        assert val not in result
+        assert not any([val in ent
+                        for res in results
+                        for ent in res])
 
     doc = "¿Hola, Qué hora es, Paul?"
-    result = get_entities(doc, 'spanish')
+    results = get_entities(doc, 'spanish')
     for val in ['¿', 'Hola', 'Qué', '?']:
-        assert not any([val in ent for ent in result])
+        assert not any([val in ent
+                        for res in results
+                        for ent in res])
+
+
+def test_produce():
+    ''' test the produce function for use in the d3m interface '''
+    docs = [eng_doc, span_doc]
+    res = produce(docs)
+    print('produce result:', res)
+    assert len(res) == len(docs)
+    assert isinstance(res[0], list) and res[0]  # a list of length > 0
