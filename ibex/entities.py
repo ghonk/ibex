@@ -4,7 +4,7 @@ import os
 import spacy
 from nltk.corpus import stopwords
 
-from .config import STOPWORD_LANGUAGES
+from .config import STOPWORD_LANGUAGES, LANG_TO_PARSER
 from .preprocess import prep_text
 
 PARSERS = {}
@@ -20,13 +20,6 @@ else:
     EXCLUDE_WORDS = set()
 
 EXCLUDE_WORDS.update(*[stopwords.words(lang) for lang in STOPWORD_LANGUAGES])
-
-
-# mapping from language name to name of spacy parser
-LANG_TO_PARSER = {
-    'english': 'en',
-    'spanish': 'es',
-}
 
 
 def remove_entity(entity):

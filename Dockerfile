@@ -1,21 +1,14 @@
-FROM python:3.6
+# FROM registry.datadrivendiscovery.org/jpl/docker_images/complete:ubuntu-artful-python36-devel-20180419-092215
+FROM registry.datadrivendiscovery.org/jpl/docker_images/complete:ubuntu-artful-python36-v2018.6.5
 
-ENV HOME=/app FLASK_APP=ibex/app.py
-
-RUN mkdir /app \
-    && pip install --upgrade pip 
-
-COPY requirements.txt $HOME/
+ENV HOME=/app
 
 WORKDIR $HOME
 
-RUN pip install -r requirements.txt \
-    && python -c "import nltk; nltk.download('stopwords')" \
-    && python -m spacy download en \
-    && python -m spacy download es  
-
+# install this package
 COPY . $HOME/
+# RUN python3 setup.py install 
+RUN pip3 install .
 
-RUN python setup.py install
-
-CMD ["flask", "run", "--host=0.0.0.0"]
+# check that it runs by triggering tests
+CMD nosetests
