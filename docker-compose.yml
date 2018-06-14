@@ -1,0 +1,17 @@
+version: '3'
+
+networks:
+  backend:
+
+services:
+
+  ibex:
+    build: .
+    command: nosetests
+    environment:
+      - PORT=5000
+      - MODEL_PATH=/app/models/torontobooks_unigrams.bin
+    networks:
+      - backend
+    volumes:
+      - ./models:/app/models
