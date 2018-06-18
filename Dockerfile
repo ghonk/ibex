@@ -1,13 +1,14 @@
-FROM python:3.6
+# FROM registry.datadrivendiscovery.org/jpl/docker_images/complete:ubuntu-artful-python36-devel-20180419-092215
+FROM registry.datadrivendiscovery.org/jpl/docker_images/complete:ubuntu-artful-python36-v2018.6.5
 
-RUN mkdir /app
+ENV HOME=/app
 
-WORKDIR /app
+WORKDIR $HOME
 
-COPY . /app/
+# install this package
+COPY . $HOME/
+# RUN python3 setup.py install 
+RUN pip3 install .
 
-RUN pip3 install -r requirements.txt
-RUN python3 -m spacy download en
-RUN python3 -m spacy download es_core_news_md
-
-CMD ["python3", "-u", "main.py"]
+# check that it runs by triggering tests
+CMD nosetests
