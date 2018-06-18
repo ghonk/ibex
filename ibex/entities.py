@@ -3,9 +3,10 @@ import os
 
 import spacy
 from nltk.corpus import stopwords
-
+from typing import List
 from .config import STOPWORD_LANGUAGES, LANG_TO_PARSER
 from .preprocess import prep_text
+
 
 PARSERS = {}
 
@@ -22,7 +23,7 @@ else:
 EXCLUDE_WORDS.update(*[stopwords.words(lang) for lang in STOPWORD_LANGUAGES])
 
 
-def remove_entity(entity):
+def filter_entity(entity):
     ''' filter entities identified by spacey. For single-word entities, remove
     those in the exclude list or not proper nouns. for multi-word entities, make
     sure all words are not stop words with some exceptions.
@@ -48,9 +49,11 @@ def remove_entity(entity):
     return any(remove)
 
 
-def get_entities(doc: str, language: str='english'):
+def get_entities(docs: List[str], language: str='english'):
     ''' Takes a document and returns a list of extracted entities '''
 
+    if isinstance(docs, str):
+        docs = [docs]
     # if language given is not the name of a spacy parser, try to convert it to one
     parser_name = language if language in LANG_TO_PARSER.values() else LANG_TO_PARSER.get(language.lower())
     if not parser_name:
@@ -60,8 +63,15 @@ def get_entities(doc: str, language: str='english'):
     if parser_name not in PARSERS:
         PARSERS[parser_name] = spacy.load(parser_name)
 
-    doc = prep_text(doc)
-    parsed_doc = PARSERS[parser_name](doc)
-    entities = set(ent.text for ent in parsed_doc.ents if not remove_entity(ent))
+    def get_ents(doc):
+        ''' prep, parse, then extract entities from doc text '''
+        doc = prep_text(doc)  # preprocess string
+        doc = PARSERS[parser_name](doc)  # parse prepped doc
+        ents = set(ent.text for ent in doc.ents if not filter_entity(ent))  # extract entities
+        return list(ents)
 
-    return list(entities)
+    return [get_ents(doc) for doc in docs]
+
+
+def produce(docs: List[str], language: str='english'):
+    return get_entities(docs, language)

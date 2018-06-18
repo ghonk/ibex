@@ -11,4 +11,4 @@ COPY . $HOME/
 RUN pip3 install .
 
 # check that it runs by triggering tests
-CMD nosetests
+CMD nosetests -s
