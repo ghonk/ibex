@@ -46,10 +46,10 @@ setup(
     package_data={'ibex': ['exclude_words.txt']},
     include_package_data=True,
     install_requires=[
-        'spacy>=2.0.11',
-        'nltk>=3.2.5',
-        'flask>=1.0.2',
-        'nose>=1.3.7',
+        'spacy==2.0.11',
+        'nltk==3.2.5',
+        'flask==1.0.2',
+        'nose==1.3.7',
     ],
     cmdclass={
         'develop': PostDevelopCommand,
