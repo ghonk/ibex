@@ -7,13 +7,13 @@ from setuptools.command.install import install
 # from distutils.core import setup
 
 
-S2V_INSTALL_PATH = os.getenv('S2V_INSTALL_PATH', '/app/epfml_sent2vec')
 LANGUAGES = os.getenv('STOPWORD_LANGUAGES', ['english', 'spanish'])  # 'hungarian', 'french', 'italian'
 LANG_TO_PARSER = {
     'english': 'en',  # 'en_core_web_md'
     'spanish': 'es',  # 'es_core_news_md'
 }
 # TODO keep this synced with the languages in config/entities.py
+
 
 class PostDevelopCommand(develop):
     """Post-installation for development mode."""
@@ -33,8 +33,6 @@ class PostInstallCommand(install):
         for lang in LANGUAGES:
             os.system("python3 -m spacy download {0}".format(LANG_TO_PARSER[lang]))
         install.run(self)  # install.do_egg_install(self)
-
-
 
 
 setup(
