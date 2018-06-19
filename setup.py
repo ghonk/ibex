@@ -15,29 +15,26 @@ LANG_TO_PARSER = {
 }
 # TODO keep this synced with the languages in config/entities.py
 
-
-class InstallCmd(install):
-    ''' Build sent2vec FastText binary, then pip install sent2vec. '''
-
+class PostDevelopCommand(develop):
+    """Post-installation for development mode."""
     def run(self):
-        install.do_egg_install(self)  # instead of install.run(self)
         import nltk
         nltk.download('stopwords')
         for lang in LANGUAGES:
             os.system("python3 -m spacy download {0}".format(LANG_TO_PARSER[lang]))
-        # install.run(self)
+        develop.run(self)
 
 
-class DevelopCmd(develop):
-    ''' Clone epfml's sent2vec repo, build sent2vec FastText binary, and pip install sent2vec. '''
-
+class PostInstallCommand(install):
+    """Post-installation for installation mode."""
     def run(self):
-        develop.do_egg_install(self)
         import nltk
         nltk.download('stopwords')
         for lang in LANGUAGES:
             os.system("python3 -m spacy download {0}".format(LANG_TO_PARSER[lang]))
-        # develop.run(self)
+        install.run(self)  # install.do_egg_install(self)
+
+
 
 
 setup(
@@ -55,8 +52,8 @@ setup(
         'nose>=1.3.7',
     ],
     cmdclass={
-        'install': InstallCmd,
-        'develop': DevelopCmd,
+        'develop': PostDevelopCommand,
+        'install': PostInstallCommand
     }
 
 
